@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Dictée Magique 🎒 - Du CM1 à la Terminale</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Quicksand:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #FFFDF7 0%, #F0F7FF 50%, #FAF5FF 100%);
+            min-height: 100vh;
+        }
+        .font-school {
+            font-family: 'Comic Neue', cursive, sans-serif;
+        }
+        .font-classic {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+        .pop-card {
+            box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.08), 0 8px 12px -6px rgba(0, 0, 0, 0.04);
+            border-bottom: 5px solid rgba(0, 0, 0, 0.08);
+            transition: all 0.25s ease;
+        }
+        .pop-btn {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .pop-btn:hover {
+            transform: translateY(-2px);
+        }
+        .pop-btn:active {
+            transform: translateY(2px);
+        }
+        .voice-pulse {
+            animation: pulse-ring 1.8s infinite;
+        }
+        /* Désactivation des soulignements et aides visuelles automatiques */
+        .no-spellcheck-area {
+            -webkit-spellcheck: false;
+            spellcheck: false;
+            font-variant-ligatures: normal;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
+            50% { transform: scale(1.04); box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+            100% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased p-3 sm:p-6 flex flex-col items-center justify-between min-h-screen">
+
+    <header class="w-full max-w-4xl flex items-center justify-between mb-4 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-amber-200">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="app.resetAll()">
+            <div class="w-12 h-12 bg-gradient-to-tr from-amber-400 to-orange-400 rounded-2xl flex items-center justify-center text-white text-2xl shadow-inner font-bold transform -rotate-3">
+                📖
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold font-school text-amber-600 tracking-wide">Ma Dictée Magique</h1>
+                <p class="text-xs text-slate-500 font-semibold" id="header-sub">Du CM1 à la Terminale • Apprendre avec bienveillance</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <span id="badge-level" class="hidden px-3 py-1 bg-indigo-100 text-indigo-700 font-bold rounded-full text-xs">CM1</span>
+            <button onclick="app.showAudioGuideModal()" class="px-3.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold rounded-xl transition flex items-center gap-1.5 border border-amber-200">
+                <i class="fa-solid fa-volume-high"></i>
+                <span>Voix & Débit</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="w-full max-w-4xl flex-grow flex flex-col items-center justify-center">
+
+        <section id="step-1" class="w-full bg-white rounded-3xl p-6 sm:p-10 pop-card border-2 border-amber-200">
+            <div class="text-center max-w-2xl mx-auto mb-7">
+                <div class="inline-block p-3 bg-amber-100 rounded-full mb-3 text-3xl">
+                    ✨🎒👩‍🏫
+                </div>
+                <h2 class="text-3xl font-extrabold font-school text-slate-800 mb-2">Bienvenue dans ton atelier de Dictée !</h2>
+                <p class="text-slate-600 font-medium text-sm sm:text-base leading-relaxed">
+                    Bonjour ! Je suis ta maîtresse virtuelle. Remplis tes informations ci-dessous et choisis ton thème favori : je vais te concocter une dictée sur-mesure pour t'entraîner et devenir incollable en orthographe !
+                </p>
+            </div>
+
+            <form id="form-welcome" onsubmit="app.handleFormSubmit(event)" class="max-w-xl mx-auto space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Ton prénom -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            <i class="fa-solid fa-user-pen text-amber-500 mr-1"></i> Ton prénom :
+                        </label>
+                        <input type="text" id="input-name" required placeholder="Ex: Lucas, Léa, Maxime..." 
+                            class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-amber-400 focus:outline-none focus:ring-4 focus:ring-amber-100 font-semibold text-slate-700 transition">
+                    </div>
+
+                    <!-- Ton âge -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            <i class="fa-solid fa-cake-candles text-pink-500 mr-1"></i> Ton âge :
+                        </label>
+                        <input type="number" id="input-age" min="8" max="22" required placeholder="Ex: 10 ans" value="10"
+                            class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-amber-400 focus:outline-none focus:ring-4 focus:ring-amber-100 font-semibold text-slate-700 transition">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Ta classe (CM1 à Terminale) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            <i class="fa-solid fa-graduation-cap text-sky-500 mr-1"></i> Ta classe (CM1 à Terminale) :
+                        </label>
+                        <select id="input-grade" required class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-amber-400 focus:outline-none focus:ring-4 focus:ring-amber-100 font-bold text-slate-700 transition bg-white">
+                            <optgroup label="Primaire">
+                                <option value="CM1" selected>CM1 (Cours Moyen 1)</option>
+                                <option value="CM2">CM2 (Cours Moyen 2)</option>
+                            </optgroup>
+                            <optgroup label="Collège">
+                                <option value="6EME">6ème</option>
+                                <option value="5EME">5ème</option>
+                                <option value="4EME">4ème</option>
+                                <option value="3EME">3ème (Prépa Brevet)</option>
+                            </optgroup>
+                            <optgroup label="Lycée">
+                                <option value="2NDE">Seconde</option>
+                                <option value="1ERE">Première (Bac de Français)</option>
+                                <option value="TERM">Terminale</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- Nombre de mots (10 à 120 mots) -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            <i class="fa-solid fa-sliders text-emerald-500 mr-1"></i> Longueur (10 à 120 mots) :
+                        </label>
+                        <select id="input-words" required class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-amber-400 focus:outline-none focus:ring-4 focus:ring-amber-100 font-bold text-slate-700 transition bg-white">
+                            <option value="15">~15 mots (Rapide & Échauffement)</option>
+                            <option value="30" selected>~30 mots (Classique & Équilibré)</option>
+                            <option value="60">~60 mots (Moyenne - Bon entraînement)</option>
+                            <option value="90">~90 mots (Longue - Défi d'attention)</option>
+                            <option value="120">~120 mots (Examen - Épreuve complète)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Thématique libre choisie par l'élève -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-feather text-purple-500 mr-1"></i> Note ici le thème de ta dictée :
+                    </label>
+                    <input type="text" id="input-theme" required placeholder="Ex: La forêt enchantée, Les explorateurs de l'espace, La mythologie grecque, La mer..."
+                        class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-purple-100 font-medium text-slate-700 transition"
+                        value="Aventures dans la forêt enchantée">
+                    <p class="text-[11px] text-slate-400 mt-1">💡 Tu peux écrire n'importe quel thème qui te passionne !</p>
+                </div>
+
+                <!-- Option d'annonce de ponctuation -->
+                <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-3 flex items-center justify-between text-xs">
+                    <span class="font-bold text-amber-900 flex items-center gap-1.5">
+                        <i class="fa-solid fa-quote-left text-amber-600"></i> Mode dictée avec ponctuation vocale :
+                    </span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="check-punctuation" checked class="sr-only peer">
+                        <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
+                </div>
+
+                <div class="pt-3">
+                    <button type="submit" class="pop-btn w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-extrabold rounded-2xl text-lg shadow-lg hover:shadow-orange-200 flex items-center justify-center space-x-2">
+                        <span>✨ Générer ma dictée et commencer</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section id="step-2" class="hidden w-full bg-white rounded-3xl p-6 sm:p-8 pop-card border-2 border-sky-200">
+            <!-- Bandeau de soutien bienveillant -->
+            <div class="flex flex-col sm:flex-row items-center justify-between bg-sky-50 border border-sky-200 rounded-2xl p-4 mb-6 gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="text-3xl">👩‍🏫</div>
+                    <div>
+                        <h3 class="font-bold text-sky-900 font-school text-lg" id="teacher-msg">À tes crayons !</h3>
+                        <p class="text-xs text-sky-700" id="teacher-sub">Écoute attentivement. Prends tout ton temps pour te relire.</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs text-slate-500 font-semibold">Vitesse :</span>
+                    <button id="btn-speed-slow" onclick="app.setAudioSpeed(0.72)" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-amber-100 text-amber-800">🐢 Lente</button>
+                    <button id="btn-speed-normal" onclick="app.setAudioSpeed(0.85)" class="px-2.5 py-1 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">🐇 Normale</button>
+                </div>
+            </div>
+
+            <!-- Studio Audio de Dictée -->
+            <div class="bg-gradient-to-br from-indigo-50/80 to-purple-50/80 rounded-2xl p-5 border border-indigo-100 mb-6">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+                    <div class="flex items-center gap-3">
+                        <div id="audio-visualizer" class="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white text-xl shadow-md">
+                            <i class="fa-solid fa-headphones"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] uppercase tracking-wider text-indigo-500 font-bold block" id="dictation-tag">Niveau scolaire</span>
+                            <h4 class="font-bold text-indigo-950 text-base" id="audio-title">Dictée prête</h4>
+                        </div>
+                    </div>
+
+                    <!-- Bouton Dictée Entière -->
+                    <button onclick="app.speakFullText()" class="pop-btn w-full sm:w-auto px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-md flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-play"></i>
+                        <span>▶️ Écouter la dictée entière</span>
+                    </button>
+                </div>
+
+                <!-- Phrases découpées avec boutons répétition -->
+                <div class="space-y-2 pt-2 max-h-64 overflow-y-auto pr-1" id="phrases-container">
+                    <!-- Rempli en JS -->
+                </div>
+            </div>
+
+            <!-- Zone de saisie pour l'élève (sans soulignement rouge, sans menu contextuel) -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                        <i class="fa-solid fa-pen-nib text-amber-500 mr-1"></i> Écris ta dictée ici (sans aide ni correcteur automatique) :
+                    </label>
+                    <span id="char-word-count" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-100">0 mot écrit</span>
+                </div>
+
+                <textarea id="child-written-text" rows="6" 
+                    placeholder="Écoute bien chaque phrase puis écris ton texte ici... Concentre-toi, aucun mot ne sera souligné en rouge !" 
+                    spellcheck="false"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    autocomplete="off"
+                    oncontextmenu="return false;"
+                    class="no-spellcheck-area w-full p-4 rounded-2xl border-2 border-slate-200 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 focus:outline-none font-medium text-slate-800 text-base sm:text-lg leading-relaxed shadow-inner"
+                    oninput="app.updateWordCount()"></textarea>
+
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                    <button onclick="app.resetAll()" class="w-full sm:w-auto text-xs font-bold text-slate-400 hover:text-slate-600 px-3 py-2 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i> Revenir au départ
+                    </button>
+                    <!-- Gros bouton bien visible pour terminer -->
+                    <button onclick="app.handleFinish()" class="pop-btn w-full sm:w-auto px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg rounded-2xl shadow-lg hover:shadow-emerald-200 flex items-center justify-center gap-2">
+                        <span>🏁 FINI : Passer à la correction</span>
+                        <i class="fa-solid fa-check-double"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="step-3" class="hidden w-full bg-white rounded-3xl p-6 sm:p-8 pop-card border-2 border-emerald-200">
+            <!-- Entête Résultat & Note Bienveillante -->
+            <div class="text-center mb-8">
+                <div id="score-stars" class="text-3xl mb-2 flex justify-center gap-1 text-amber-400">
+                    ⭐⭐⭐⭐⭐
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold font-school text-slate-800 mb-1" id="correction-headline">Bravo pour ton travail !</h2>
+                <div class="inline-flex items-baseline gap-2 bg-emerald-50 px-6 py-2.5 rounded-2xl border border-emerald-200 my-2 shadow-sm">
+                    <span class="text-slate-500 text-sm font-bold">Ta note :</span>
+                    <span id="score-badge" class="text-3xl sm:text-4xl font-black text-emerald-600">20 / 20</span>
+                </div>
+                <p id="appreciation-text" class="text-slate-600 font-semibold max-w-xl mx-auto text-sm mt-1 leading-relaxed">
+                    Voici l'analyse bienveillante de ton texte. Prends le temps d'observer chaque détail pour progresser !
+                </p>
+            </div>
+
+            <!-- Comparaison Texte Original vs Texte Enfant -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-800 block mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-pencil text-amber-600"></i> Ton texte écrit :
+                    </span>
+                    <p id="display-child-text" class="text-slate-800 font-medium text-sm leading-relaxed whitespace-pre-wrap"></p>
+                </div>
+                <div class="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 block mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-certificate text-emerald-600"></i> Le texte modèle :
+                    </span>
+                    <p id="display-original-text" class="text-emerald-950 font-bold text-sm leading-relaxed whitespace-pre-wrap"></p>
+                </div>
+            </div>
+
+            <!-- Tableau de Correction Pédagogique (Explication + Exemple concret) -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-base sm:text-lg font-bold font-school text-slate-800 flex items-center gap-2">
+                        <span>🔍 Tableau d'analyse des erreurs</span>
+                        <span id="mistake-count-badge" class="text-xs bg-purple-100 text-purple-700 px-3 py-0.5 rounded-full font-bold">0 correction</span>
+                    </h3>
+                </div>
+
+                <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm bg-white">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider">
+                                <th class="p-3.5 border-b w-1/4">Mot écrit</th>
+                                <th class="p-3.5 border-b w-1/4">Correction</th>
+                                <th class="p-3.5 border-b w-1/2">Règle expliquée & Exemple concret</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mistakes-table-body" class="divide-y divide-slate-100 text-sm">
+                            <!-- Rempli en JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Consigne pédagogique : recopier 10 fois -->
+            <div class="p-4 bg-orange-50 border-2 border-orange-200 rounded-2xl flex items-center space-x-3 mb-6">
+                <span class="text-3xl">📓</span>
+                <div>
+                    <h4 class="font-bold text-orange-950 text-sm">Le Conseil d'or de la Maîtresse :</h4>
+                    <p class="text-xs text-orange-900 font-medium leading-relaxed">
+                        Pour bien retenir, je te conseille de <span class="font-bold underline">recopier 10 fois ces mots</span> sur ton cahier ! Ton cerveau et ta main mémoriseront ainsi la bonne orthographe pour toujours.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 4 : Orientation et Recommencer -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                <button onclick="app.showLessonCourse()" class="pop-btn w-full sm:w-auto px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-md flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>📚 Revoir le cours ciblé</span>
+                </button>
+                <button onclick="app.resetAll()" class="pop-btn w-full sm:w-auto px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-md flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>🔄 Recommencer l'entraînement</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- MODAL : Mini-cours résumé ciblé (Étape 4) -->
+        <div id="lesson-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border-4 border-indigo-200 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between border-b pb-3 mb-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl">📚</span>
+                        <h3 class="font-school font-bold text-xl text-indigo-900">Le Mini-Cours Ciblé de Maîtresse Sophie</h3>
+                    </div>
+                    <button onclick="app.closeLessonCourse()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold">✕</button>
+                </div>
+
+                <div id="lesson-content" class="space-y-4 text-slate-700 text-sm leading-relaxed">
+                    <!-- Rempli dynamiquement selon les fautes observées -->
+                </div>
+
+                <div class="mt-6 pt-4 border-t flex justify-end">
+                    <button onclick="app.closeLessonCourse()" class="px-5 py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs hover:bg-indigo-700">
+                        J'ai bien compris ! 🌟
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL : Guide et réglage de la clarté vocale -->
+        <div id="audio-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-amber-200">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-volume-high text-amber-500"></i> Réglage de la voix pour la dictée
+                    </h3>
+                    <button onclick="app.closeAudioModal()" class="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+                </div>
+                <p class="text-xs text-slate-600 mb-4">
+                    Pour assurer une clarté optimale à l'écoute d'un enfant ou d'un collégien/lycéen, sélectionnez une voix française naturelle et réglez le rythme.
+                </p>
+
+                <div class="space-y-3 mb-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Voix française disponible :</label>
+                        <select id="voice-select" onchange="app.changeSelectedVoice()" class="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium bg-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Vitesse de lecture vocale :</label>
+                        <input type="range" id="voice-rate-slider" min="0.6" max="1.1" step="0.05" value="0.78" onchange="app.onRateSliderChange(this.value)" class="w-full">
+                        <div class="flex justify-between text-[10px] text-slate-400 font-bold mt-1">
+                            <span>Très lent (0.6x)</span>
+                            <span id="rate-indicator">0.78x</span>
+                            <span>Rapide (1.1x)</span>
+                        </div>
+                    </div>
+                    <button onclick="app.testVoice()" class="w-full py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl font-bold text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-play"></i> Tester la prononciation
+                    </button>
+                </div>
+
+                <button onclick="app.closeAudioModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl">
+                    Appliquer et fermer
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full max-w-4xl text-center py-4 text-xs font-semibold text-slate-400 flex items-center justify-center gap-1">
+        <span>Ma Dictée Magique 🎒 • Conforme aux programmes scolaires du CM1 à la Terminale.</span>
+    </footer>
+
+    <script>
+        /**
+         * CLASSE PRINCIPALE : DICTÉE MAGIQUE
+         * Conçue avec alignement dynamique (Levenshtein) pour éliminer les bugs de comparaison mot à mot.
+         * Banques textuelles littéraires et thématiques du CM1 à la Terminale.
+         */
+        class DicteeApp {
+            constructor() {
+                this.userData = {
+                    name: '',
+                    age: 10,
+                    grade: 'CM1',
+                    wordTarget: 30,
+                    theme: 'Aventures dans la forêt enchantée',
+                    speakPunctuation: true
+                };
+
+                this.currentDictee = null;
+                this.audioRate = 0.78; // Rythme d'élocution adapté aux enfants
+                this.synth = window.speechSynthesis;
+                this.availableVoices = [];
+                this.selectedVoice = null;
+                this.lastAnalysis = null;
+
+                this.initSpeech();
+            }
+
+            // Gestion de la synthèse vocale
+            initSpeech() {
+                if (!('speechSynthesis' in window)) return;
+
+                const loadVoices = () => {
+                    const allVoices = this.synth.getVoices();
+                    this.availableVoices = allVoices.filter(v => v.lang.startsWith('fr') || v.lang.startsWith('FR'));
+
+                    const select = document.getElementById('voice-select');
+                    if (select) {
+                        select.innerHTML = '';
+                        if (this.availableVoices.length === 0) {
+                            const opt = document.createElement('option');
+                            opt.text = "Voix française standard du système";
+                            select.appendChild(opt);
+                        } else {
+                            this.availableVoices.forEach((voice, index) => {
+                                const opt = document.createElement('option');
+                                opt.value = index;
+                                opt.text = `${voice.name} (${voice.lang})`;
+                                // Priorité aux voix reconnues comme chaleureuses
+                                if (/Audrey|Thomas|Amélie|Pauline|Natural|Google français|Siri/i.test(voice.name)) {
+                                    opt.selected = true;
+                                    this.selectedVoice = voice;
+                                }
+                                select.appendChild(opt);
+                            });
+                            if (!this.selectedVoice && this.availableVoices.length > 0) {
+                                this.selectedVoice = this.availableVoices[0];
+                            }
+                        }
+                    }
+                };
+
+                loadVoices();
+                if (speechSynthesis.onvoiceschanged !== undefined) {
+                    speechSynthesis.onvoiceschanged = loadVoices;
+                }
+            }
+
+            changeSelectedVoice() {
+                const select = document.getElementById('voice-select');
+                const idx = select.value;
+                if (this.availableVoices[idx]) {
+                    this.selectedVoice = this.availableVoices[idx];
+                }
+            }
+
+            onRateSliderChange(val) {
+                this.audioRate = parseFloat(val);
+                const ind = document.getElementById('rate-indicator');
+                if (ind) ind.innerText = `${val}x`;
+            }
+
+            setAudioSpeed(rate) {
+                this.audioRate = rate;
+                const btnSlow = document.getElementById('btn-speed-slow');
+                const btnNorm = document.getElementById('btn-speed-normal');
+                if (rate < 0.8) {
+                    btnSlow.className = "px-2.5 py-1 rounded-xl text-xs font-bold bg-amber-100 text-amber-800";
+                    btnNorm.className = "px-2.5 py-1 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100";
+                } else {
+                    btnNorm.className = "px-2.5 py-1 rounded-xl text-xs font-bold bg-sky-100 text-sky-800";
+                    btnSlow.className = "px-2.5 py-1 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100";
+                }
+                const slider = document.getElementById('voice-rate-slider');
+                if (slider) slider.value = rate;
+                const ind = document.getElementById('rate-indicator');
+                if (ind) ind.innerText = `${rate}x`;
+            }
+
+            testVoice() {
+                this.speakText("Bonjour les champions ! Écoutez attentivement chaque mot pour réussir votre dictée.");
+            }
+
+            // Transformation du texte en version oralisée avec annonce de la ponctuation si souhaité
+            prepareSpokenText(text, withPunctuationAnnouncement) {
+                if (!withPunctuationAnnouncement) {
+                    return text.replace(/,/g, ' , ')
+                               .replace(/\./g, ' . ')
+                               .replace(/!/g, ' ! ')
+                               .replace(/\?/g, ' ? ')
+                               .replace(/:/g, ' : ')
+                               .replace(/;/g, ' ; ');
+                }
+
+                // Annonce claire de la ponctuation pour l'enfant/élève
+                return text
+                    .replace(/\.\.\./g, ' point de suspension, ')
+                    .replace(/\./g, ' point. ')
+                    .replace(/,/g, ' virgule, ')
+                    .replace(/\!/g, ' point d\'exclamation. ')
+                    .replace(/\?/g, ' point d\'interrogation. ')
+                    .replace(/:/g, ' deux points, ')
+                    .replace(/;/g, ' point-virgule, ');
+            }
+
+            speakText(text, onEndCallback = null) {
+                if (!('speechSynthesis' in window)) return;
+                this.synth.cancel(); // Évite toute superposition de voix ou gel du lecteur
+
+                const spokenVersion = this.prepareSpokenText(text, this.userData.speakPunctuation);
+                const utterance = new SpeechSynthesisUtterance(spokenVersion);
+                utterance.lang = 'fr-FR';
+                utterance.rate = this.audioRate;
+                utterance.pitch = 1.05;
+
+                if (this.selectedVoice) {
+                    utterance.voice = this.selectedVoice;
+                }
+
+                const visualizer = document.getElementById('audio-visualizer');
+                if (visualizer) visualizer.classList.add('voice-pulse', 'bg-amber-500');
+
+                utterance.onend = () => {
+                    if (visualizer) visualizer.classList.remove('voice-pulse', 'bg-amber-500');
+                    if (onEndCallback) onEndCallback();
+                };
+
+                utterance.onerror = () => {
+                    if (visualizer) visualizer.classList.remove('voice-pulse', 'bg-amber-500');
+                };
+
+                this.synth.speak(utterance);
+            }
+
+            generateCurriculumDictee(grade, targetWords, userTheme) {
+                const themeTag = userTheme.trim();
+
+                // Banques textuelles par cycles scolaires
+                const corpus = {
+                    CM1: [
+                        { text: `Sur le thème "${themeTag}", les jeunes randonneurs avancent joyeusement dans les grands sous-bois. Ils observent les animaux qui dorment paisiblement. Le soleil illumine les hautes branches vertes.` },
+                        { text: `Pour découvrir "${themeTag}", nos courageux explorateurs ont traversé un ruisseau scintillant. Les petites grenouilles sautent sous les feuilles mouillées. Chacun range soigneusement son sac à dos.` },
+                        { text: `Dans le monde de "${themeTag}", les enfants attentifs découvrent un mystérieux coffre de bois doré. Deux petits écureuils roux grignotent des noisettes fraîches près d'un vieux chêne robuste.` }
+                    ],
+                    CM2: [
+                        { text: `Autour du thème "${themeTag}", les élèves attentifs préparent une fabuleuse expédition. Ils ont rassemblé leurs cartes anciennes et leurs précieux carnets de voyage. Quand la brume matinale se dissipe, des oiseaux majestueux déploient leurs ailes colorées au-dessus des collines ensoleillées.` },
+                        { text: `Inspirés par "${themeTag}", les voyageurs intrépides contemplent les paysages infinis qui s'étendent devant eux. Pendant toute la matinée, ils ont marché sans faiblir vers les mystérieuses montagnes lointaines.` },
+                        { text: `En explorant "${themeTag}", nous avons aperçu d'immenses arbres centenaires dont les racines plongent dans une terre sombre. Plusieurs renards curieux observent la clairière où dansent les reflets dorés du crépuscule.` }
+                    ],
+                    "6EME": [
+                        { text: `À travers l'évocation de "${themeTag}", les compagnons d'aventure découvrirent un passage secret dissimulé derrière une antique cascade d'eau vive. Les pierres couvertes de mousse glissaient sous leurs pas mesurés, tandis que les torches projettent d'étranges ombres sur les parois rocheuses de la caverne.` },
+                        { text: `Au cœur de "${themeTag}", l'orage grondait avec violence dans les vallées escarpées. Les voyageurs cherchaient désespérément un refuge sûr pour passer la nuit. Enfin, une lueur rassurante apparut au loin entre les feuillages battus par les vents violents.` }
+                    ],
+                    "5EME": [
+                        { text: `Poursuivant leur quête dédiée à "${themeTag}", les chevaliers fidèles chevauchaient à travers les landes désolées. Bien qu'ils eussent essuyé de terribles revers lors de la traversée du fleuve glacé, ils ne perdaient point courage et gardaient confiance en leur noble destinée.` },
+                        { text: `Dans cette contrée enchantée par "${themeTag}", les cloches du beffroi retentissaient à l'aube naissante. Les marchands et les artisans s'activaient déjà dans les ruelles pavées, apportant leurs plus beaux tissus et des épices rares récoltées au cours de longs périples maritimes.` }
+                    ],
+                    "4EME": [
+                        { text: `Dans le décor fantastique de "${themeTag}", une atmosphère lourde de mystère enveloppait le domaine délaissé. Les silhouettes des statues de marbre semblaient s'animer furtivement sous les rayons d'une lune blafarde, inspirant aux promeneurs nocturnes un frisson d'indicible inquiétude.` },
+                        { text: `Considérant les promesses de "${themeTag}", l'homme de lettres avait rédigé de multiples lettres passionnées. Il espérait que son correspondant comprendrait enfin les raisons profondes qui l'avaient conduit à quitter la capitale pour s'isoler dans la solitude bienfaitrice des rivages marins.` }
+                    ],
+                    "3EME": [
+                        { text: `Évoquant les vertus de "${themeTag}", l'orateur s'adressa à la foule attentive avec une éloquence saisissante. Il rappela les devoirs sacrés que la société impose à chaque citoyen conscient de son rôle historique et souligna l'importance de préserver la mémoire des combats passés pour éclairer l'avenir.` },
+                        { text: `À l'époque où triomphaient les idéaux de "${themeTag}", la jeunesse romantique cherchait à s'affranchir des carcans traditionnels. Les artistes peignaient des toiles incandescentes où la ferveur des passions humaines surpassait les rigueurs glacées du classicisme académique.` }
+                    ],
+                    "2NDE": [
+                        { text: `S'imprégnant de la beauté de "${themeTag}", le poète contemplait les métamorphoses fugaces de la lumière crépusculaire. Dans ses vers harmonieux se reflétaient les mélancolies profondes d'une âme en quête d'absolu, déchirée entre la fugacité de l'existence terrestre et l'éternité des sentiments purs.` },
+                        { text: `La méditation profonde que suscitait "${themeTag}" avait convaincu le philosophe de réexaminer les fondements mêmes de la connaissance. Rejetant les dogmes préétablis et les vérités complaisantes, il entreprit une quête rigoureuse qui devait bouleverser sa conception de l'esprit humain.` }
+                    ],
+                    "1ERE": [
+                        { text: `Au regard des symboles véhiculés par "${themeTag}", l'écriture dramatique acquiert une densité singulière où chaque parole prononcée devient le vecteur d'un destin inexorable. Les personnages tragiques, prisonniers consentants de leurs passions dévorantes, ne sauraient échapper au vertige d'une vérité cruelle que seule la catharsis théâtrale parvient à sublimer avec grandeur.` },
+                        { text: `Dans cette œuvre singulière inspirée de "${themeTag}", l'auteur manie l'ironie satirique avec une dextérité prodigieuse. En dénonçant les hypocrisies de son temps, il compose un portrait sans complaisance des illusions mondaines tout en invitant le lecteur lucide à un discernement constant.` }
+                    ],
+                    TERM: [
+                        { text: `L'interrogation métaphysique déployée autour de "${themeTag}" confronte l'homme à la conscience aiguë de sa liberté fondamentale. Dès lors qu'il refuse de se complaire dans l'illusion consolatrice de doctrines déterministes, l'individu assume pleinement l'angoisse inhérente à l'acte de création et à la responsabilité morale que requiert l'édification de son propre destin au sein d'une collectivité solidaire.` },
+                        { text: `À l'apogée de sa réflexion sur "${themeTag}", l'essayiste met en exergue l'aporie fondamentale qui sous-tend toute prétention à l'universalité rationnelle. En articulant rigueur analytique et sensibilité poétique, il démontre que la vérité ne saurait être appréhendée comme un dogme immuable mais comme une recherche perpétuelle et dialectique.` }
+                    ]
+                };
+
+                const bank = corpus[grade] || corpus["CM1"];
+                let chosen = bank[Math.floor(Math.random() * bank.length)].text;
+
+                // Ajuster la longueur au plus près du nombre de mots ciblé (10 à 120 mots)
+                let words = chosen.split(/\s+/);
+                if (words.length > targetWords + 5) {
+                    // Tronque intelligemment à la fin d'une phrase
+                    const sentences = chosen.match(/[^.!?]+[.!?]+/g) || [chosen];
+                    let cumulative = "";
+                    for (const s of sentences) {
+                        const count = (cumulative + " " + s).trim().split(/\s+/).length;
+                        cumulative = (cumulative + " " + s).trim();
+                        if (count >= targetWords) break;
+                    }
+                    if (cumulative) chosen = cumulative;
+                }
+
+                // Découpage en phrases pour le lecteur
+                const rawSentences = chosen.match(/[^.!?]+[.!?]+/g) || [chosen];
+                const cleanSentences = rawSentences.map(s => s.trim()).filter(Boolean);
+
+                return {
+                    fullText: chosen,
+                    sentences: cleanSentences,
+                    wordCount: chosen.split(/\s+/).length
+                };
+            }
+
+            // Soumission du Formulaire Accueil (Étape 1)
+            handleFormSubmit(event) {
+                event.preventDefault();
+                this.userData.name = document.getElementById('input-name').value.trim() || 'Champion';
+                this.userData.age = parseInt(document.getElementById('input-age').value) || 10;
+                this.userData.grade = document.getElementById('input-grade').value;
+                this.userData.wordTarget = parseInt(document.getElementById('input-words').value) || 30;
+                this.userData.theme = document.getElementById('input-theme').value.trim() || 'Aventures';
+                this.userData.speakPunctuation = document.getElementById('check-punctuation').checked;
+
+                // Génération du texte
+                this.currentDictee = this.generateCurriculumDictee(this.userData.grade, this.userData.wordTarget, this.userData.theme);
+
+                // Mise à jour de l'affichage
+                document.getElementById('badge-level').innerText = `${this.userData.grade} • ${this.userData.age} ans`;
+                document.getElementById('badge-level').classList.remove('hidden');
+                document.getElementById('teacher-msg').innerText = `À tes crayons, ${this.userData.name} ! 🌟`;
+                document.getElementById('dictation-tag').innerText = `Classe : ${this.userData.grade} • Thème : ${this.userData.theme}`;
+                document.getElementById('audio-title').innerText = `Dictée de ${this.currentDictee.wordCount} mots`;
+
+                // Création des boutons de phrases découpées
+                const container = document.getElementById('phrases-container');
+                container.innerHTML = '';
+
+                this.currentDictee.sentences.forEach((phrase, idx) => {
+                    const row = document.createElement('div');
+                    row.className = "flex items-center justify-between p-3 bg-white rounded-xl border border-indigo-100 shadow-sm hover:border-indigo-300 transition";
+                    row.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-black flex items-center justify-center">${idx + 1}</span>
+                            <span class="text-xs font-semibold text-slate-700">Phrase ${idx + 1} cachée (écoute bien !)</span>
+                        </div>
+                        <button onclick="app.speakSentence(${idx})" class="pop-btn px-3 py-1.5 bg-sky-100 hover:bg-sky-200 text-sky-900 text-xs font-bold rounded-lg flex items-center gap-1.5">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>🔁 Réécouter</span>
+                        </button>
+                    `;
+                    container.appendChild(row);
+                });
+
+                // Transition Étape 1 -> Étape 2
+                document.getElementById('step-1').classList.add('hidden');
+                document.getElementById('step-2').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Message d'accueil vocal bienveillant
+                setTimeout(() => {
+                    this.speakText(`Bonjour ${this.userData.name} ! Prépare ton stylo, voici ta dictée sur le thème : ${this.userData.theme}.`);
+                }, 300);
+            }
+
+            speakFullText() {
+                if (!this.currentDictee) return;
+                this.speakText(this.currentDictee.fullText);
+            }
+
+            speakSentence(index) {
+                if (!this.currentDictee || !this.currentDictee.sentences[index]) return;
+                this.speakText(this.currentDictee.sentences[index]);
+            }
+
+            updateWordCount() {
+                const text = document.getElementById('child-written-text').value.trim();
+                const count = text ? text.split(/\s+/).filter(Boolean).length : 0;
+                document.getElementById('char-word-count').innerText = `${count} mot${count > 1 ? 's' : ''} écrit${count > 1 ? 's' : ''}`;
+            }
+
+            handleFinish() {
+                const childText = document.getElementById('child-written-text').value.trim();
+
+                if (!childText || childText.length < 5) {
+                    this.showMessageBanner("Tu n'as pas encore écrit ton texte ! Écris-le dans la case pour que je puisse le corriger ✏️");
+                    return;
+                }
+
+                const analysis = this.analyzeDictationRobust(this.currentDictee.fullText, childText);
+                this.lastAnalysis = analysis;
+                this.renderCorrectionScreen(analysis, childText);
+            }
+
+            // Algorithme d'alignement intelligent pour éviter tout bug de décalage si un mot est manquant ou ajouté
+            analyzeDictationRobust(originalText, userText) {
+                const normalize = (w) => w.toLowerCase().replace(/[.,!?;:«»"()]/g, '').trim();
+
+                const origTokens = originalText.split(/\s+/).filter(Boolean);
+                const userTokens = userText.split(/\s+/).filter(Boolean);
+
+                const n = origTokens.length;
+                const m = userTokens.length;
+
+                // Matrice de programmation dynamique pour alignement optimal
+                const dp = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
+
+                for (let i = 0; i <= n; i++) dp[i][0] = i * 2;
+                for (let j = 0; j <= m; j++) dp[0][j] = j * 2;
+
+                for (let i = 1; i <= n; i++) {
+                    for (let j = 1; j <= m; j++) {
+                        const cost = normalize(origTokens[i - 1]) === normalize(userTokens[j - 1]) ? 0 : 2;
+                        dp[i][j] = Math.min(
+                            dp[i - 1][j - 1] + cost,    // Substitution / Exact match
+                            dp[i - 1][j] + 2,          // Omission
+                            dp[i][j - 1] + 2           // Insertion
+                        );
+                    }
+                }
+
+                // Reconstruction du chemin d'alignement
+                let i = n, j = m;
+                const aligned = [];
+
+                while (i > 0 || j > 0) {
+                    if (i > 0 && j > 0 && (dp[i][j] === dp[i - 1][j - 1] + (normalize(origTokens[i - 1]) === normalize(userTokens[j - 1]) ? 0 : 2))) {
+                        aligned.unshift({ orig: origTokens[i - 1], user: userTokens[j - 1] });
+                        i--; j--;
+                    } else if (i > 0 && dp[i][j] === dp[i - 1][j] + 2) {
+                        aligned.unshift({ orig: origTokens[i - 1], user: '(mot manquant)' });
+                        i--;
+                    } else {
+                        aligned.unshift({ orig: '', user: userTokens[j - 1] });
+                        j--;
+                    }
+                }
+
+                const mistakes = [];
+                let correctCount = 0;
+
+                aligned.forEach(pair => {
+                    if (!pair.orig) {
+                        // Mot en trop ajouté par l'élève
+                        mistakes.push({
+                            written: pair.user,
+                            correction: '(en trop)',
+                            explanation: "Ce mot a été ajouté mais n'était pas présent dans la dictée.",
+                            example: "Prends bien le temps d'écouter le nombre de mots de la phrase.",
+                            category: "ajout_inutile"
+                        });
+                        return;
+                    }
+
+                    const cleanO = normalize(pair.orig);
+                    const cleanU = normalize(pair.user);
+
+                    if (cleanO === cleanU) {
+                        correctCount++;
+                    } else {
+                        const pedagogical = this.getGrammarPedagogy(cleanO, cleanU, pair.orig);
+                        mistakes.push({
+                            written: pair.user,
+                            correction: pair.orig,
+                            explanation: pedagogical.ruleSentence,
+                            example: pedagogical.exampleSentence,
+                            category: pedagogical.category
+                        });
+                    }
+                });
+
+                // Calcul bienveillant de la note sur 20
+                let rawScore = Math.round((correctCount / Math.max(1, n)) * 20);
+                if (rawScore < 8 && mistakes.length <= 4) rawScore = 10;
+                const finalScore = Math.max(8, Math.min(20, rawScore));
+
+                return {
+                    score: finalScore,
+                    mistakes: mistakes,
+                    totalWords: n,
+                    correctCount: correctCount
+                };
+            }
+
+            // Règle avec 1 PHRASE d'explication + 1 PHRASE d'exemple concret
+            getGrammarPedagogy(targetWord, writtenWord, originalWithPunct) {
+                // 1. Verbes en -ent
+                if (targetWord.endsWith('ent') && (writtenWord.endsWith('e') || writtenWord.endsWith('es') || writtenWord.endsWith('ait'))) {
+                    return {
+                        category: "verbes_ent",
+                        ruleSentence: "Quand le sujet est au pluriel (plusieurs personnes font l'action), le verbe prend obligatoirement la terminaison muette « -ent ».",
+                        exampleSentence: "Exemple concret : On écrit « Les renards march<strong>ent</strong> » car ce sont les renards qui font l'action."
+                    };
+                }
+
+                // 2. Pluriel des noms et adjectifs en -s ou -x
+                if ((targetWord.endsWith('s') || targetWord.endsWith('x')) && !writtenWord.endsWith('s') && !writtenWord.endsWith('x')) {
+                    return {
+                        category: "pluriel_s",
+                        ruleSentence: "Le mot est précédé d'un déterminant pluriel (les, des, deux, plusieurs), il doit donc porter la marque du pluriel « -s » ou « -x ».",
+                        exampleSentence: "Exemple concret : On écrit « un arbre vert » au singulier, mais « des arbre<strong>s</strong> vert<strong>s</strong> » au pluriel."
+                    };
+                }
+
+                // 3. a / à
+                if (targetWord === 'à' && writtenWord === 'a') {
+                    return {
+                        category: "homophone_a",
+                        ruleSentence: "Pour savoir s'il faut mettre l'accent grave sur le « à », remplace-le par « avait » : si la phrase ne veut plus rien dire, c'est la préposition « à ».",
+                        exampleSentence: "Exemple concret : On écrit « Il va <strong>à</strong> l'école » car on ne peut pas dire « Il va avait l'école »."
+                    };
+                }
+
+                // 4. et / est
+                if (targetWord === 'et' && writtenWord === 'est') {
+                    return {
+                        category: "homophone_et",
+                        ruleSentence: "Le mot « et » relie deux éléments et peut être remplacé par « et puis ».",
+                        exampleSentence: "Exemple concret : On écrit « Le chien <strong>et</strong> le chat » car on peut dire « Le chien et puis le chat »."
+                    };
+                }
+
+                // 5. son / sont
+                if (targetWord === 'sont' && writtenWord === 'son') {
+                    return {
+                        category: "homophone_sont",
+                        ruleSentence: "Le mot « sont » est le verbe être au présent et peut être remplacé par « étaient ».",
+                        exampleSentence: "Exemple concret : On écrit « Ils <strong>sont</strong> joyeux » car on peut dire « Ils étaient joyeux »."
+                    };
+                }
+
+                // 6. leur / leurs
+                if (targetWord === 'leur' && writtenWord === 'leurs') {
+                    return {
+                        category: "leur",
+                        ruleSentence: "Placé devant un verbe ou devant un nom au singulier, le mot « leur » est toujours invariable et ne prend jamais de « s ».",
+                        exampleSentence: "Exemple concret : On écrit « Je <strong>leur</strong> donne un livre » et « <strong>Leur</strong> maison »."
+                    };
+                }
+
+                // 7. Participe passé en -é vs infinitif en -er
+                if (targetWord.endsWith('é') && writtenWord.endsWith('er')) {
+                    return {
+                        category: "participe_passe",
+                        ruleSentence: "Pour choisir entre « -é » et « -er », remplace le verbe par « vendu » ou « prendre » : si tu dis « vendu », il faut écrire « -é ».",
+                        exampleSentence: "Exemple concret : On écrit « Il a march<strong>é</strong> » car on peut dire « Il a vendu »."
+                    };
+                }
+
+                // 8. Oubli de mot
+                if (writtenWord === '(mot manquant)') {
+                    return {
+                        category: "mot_manquant",
+                        ruleSentence: "Ce mot a été omis lors de l'écriture de la dictée.",
+                        exampleSentence: `Exemple concret : N'oublie pas de bien noter « ${originalWithPunct} » dans ta phrase.`
+                    };
+                }
+
+                // 9. Règle lexicale / orthographe générale
+                return {
+                    category: "orthographe_lexicale",
+                    ruleSentence: `Ce mot possède une orthographe d'usage spécifique avec des lettres muettes ou des consonnes particulières à mémoriser.`,
+                    exampleSentence: `Exemple concret : La graphie correcte est « ${originalWithPunct} ».`
+                };
+            }
+
+            renderCorrectionScreen(analysis, childText) {
+                document.getElementById('step-2').classList.add('hidden');
+                document.getElementById('step-3').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Note sur 20 et étoiles
+                document.getElementById('score-badge').innerText = `${analysis.score} / 20`;
+                let stars = '⭐⭐⭐⭐⭐';
+                let headline = `Félicitations pour tes efforts, ${this.userData.name} ! 🌟`;
+                let appreciation = `Tu as fait preuve d'une belle concentration. Découvre tes résultats ci-dessous :`;
+
+                if (analysis.score >= 19) {
+                    stars = '⭐⭐⭐⭐⭐';
+                    headline = `Impressionnant sans-faute, ${this.userData.name} ! 🏆`;
+                    appreciation = `Un travail d'excellence digne d'un futur académicien ! Tu maîtrises les subtilités de la langue française avec brio.`;
+                } else if (analysis.score >= 14) {
+                    stars = '⭐⭐⭐⭐';
+                    headline = `Très bon résultat, ${this.userData.name} ! 👏`;
+                    appreciation = `C'est une très belle dictée. Encore quelques petits automatismes et tu seras parfaitement imbattable !`;
+                } else {
+                    stars = '⭐⭐⭐';
+                    headline = `Bravo pour ta persévérance, ${this.userData.name} ! 💪`;
+                    appreciation = `La langue française recèle de petits pièges passionnants. Grâce à nos explications ci-dessous, tu vas progresser très vite !`;
+                }
+
+                document.getElementById('score-stars').innerText = stars;
+                document.getElementById('correction-headline').innerText = headline;
+                document.getElementById('appreciation-text').innerText = appreciation;
+
+                // Affichage des textes
+                document.getElementById('display-child-text').innerText = childText;
+                document.getElementById('display-original-text').innerText = this.currentDictee.fullText;
+
+                // Remplissage du tableau
+                const tbody = document.getElementById('mistakes-table-body');
+                tbody.innerHTML = '';
+                document.getElementById('mistake-count-badge').innerText = `${analysis.mistakes.length} correction${analysis.mistakes.length > 1 ? 's' : ''}`;
+
+                if (analysis.mistakes.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td colspan="3" class="p-8 text-center text-emerald-700 font-extrabold bg-emerald-50/50">
+                            🎉 Incroyable ! Zéro faute constatée ! Tu as orthographié chaque mot avec une exactitude parfaite !
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                } else {
+                    analysis.mistakes.forEach(m => {
+                        const row = document.createElement('tr');
+                        row.className = "hover:bg-slate-50/80 transition";
+                        row.innerHTML = `
+                            <td class="p-3.5 font-bold text-rose-600 bg-rose-50/30 border-b line-through decoration-rose-400 align-top">${m.written}</td>
+                            <td class="p-3.5 font-bold text-emerald-700 bg-emerald-50/30 border-b align-top">${m.correction}</td>
+                            <td class="p-3.5 text-slate-700 border-b text-xs sm:text-sm space-y-1 align-top">
+                                <p class="font-medium text-slate-800">📖 ${m.explanation}</p>
+                                <p class="text-xs text-indigo-900 bg-indigo-50/80 p-2 rounded-xl border border-indigo-100 font-semibold">💡 ${m.example}</p>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+
+                // Annonce audio bienveillante
+                setTimeout(() => {
+                    this.speakText(`Bravo ${this.userData.name} ! Tu obtiens la note de ${analysis.score} sur 20. Analyse bien chaque conseil pour ton cahier.`);
+                }, 400);
+            }
+
+            showLessonCourse() {
+                const modal = document.getElementById('lesson-modal');
+                const content = document.getElementById('lesson-content');
+                modal.classList.remove('hidden');
+
+                const categories = this.lastAnalysis ? [...new Set(this.lastAnalysis.mistakes.map(m => m.category))] : [];
+
+                let html = `
+                    <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-200 mb-4">
+                        <h4 class="font-bold text-indigo-900 mb-1">🌟 Les Super-Règles pour ton niveau (${this.userData.grade})</h4>
+                        <p class="text-xs text-indigo-700">Voici le résumé ciblé préparé par Maîtresse Sophie pour éliminer définitivement ces fautes :</p>
+                    </div>
+                `;
+
+                if (categories.includes('verbes_ent')) {
+                    html += `
+                        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
+                            <h5 class="font-bold text-amber-900 text-sm mb-1">1. L'accord du verbe avec son sujet pluriel</h5>
+                            <p class="text-xs text-slate-700 mb-1">Quand plusieurs personnes ou plusieurs objets font l'action, le verbe se termine par <strong>-ent</strong> (lettres muettes qu'on n'entend pas à l'oral !).</p>
+                            <p class="text-xs font-bold text-amber-800 bg-white p-2 rounded-lg mt-1 border border-amber-200">
+                                💡 Exemple : « Les explorateur<strong>s</strong> avanc<strong>ent</strong> » (Qui avance ? Ce sont les explorateurs, donc -ent).
+                            </p>
+                        </div>
+                    `;
+                }
+
+                if (categories.includes('pluriel_s')) {
+                    html += `
+                        <div class="p-4 bg-sky-50 rounded-2xl border border-sky-200">
+                            <h5 class="font-bold text-sky-900 text-sm mb-1">2. La chaîne des accords dans le groupe nominal</h5>
+                            <p class="text-xs text-slate-700 mb-1">Le déterminant pluriel (les, des, leurs, ces) est la locomotive du train : tous les wagons (nom et adjectifs) prennent un <strong>-s</strong> ou un <strong>-x</strong> !</p>
+                            <p class="text-xs font-bold text-sky-800 bg-white p-2 rounded-lg mt-1 border border-sky-200">
+                                💡 Exemple : « Le<strong>s</strong> beau<strong>x</strong> oiseau<strong>x</strong> bleu<strong>s</strong> ».
+                            </p>
+                        </div>
+                    `;
+                }
+
+                if (categories.includes('participe_passe')) {
+                    html += `
+                        <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+                            <h5 class="font-bold text-emerald-900 text-sm mb-1">3. L'astuce magique : Participe en -é ou Infinitif en -er ?</h5>
+                            <p class="text-xs text-slate-700 mb-1">Remplace mentalement le verbe par <strong>« mordre »</strong> ou <strong>« vendre »</strong>. Si tu entends « vendu », écris <strong>-é</strong>. Si tu entends « vendre », écris <strong>-er</strong>.</p>
+                            <p class="text-xs font-bold text-emerald-800 bg-white p-2 rounded-lg mt-1 border border-emerald-200">
+                                💡 Exemple : « Il a <em>mangé</em> » (il a vendu ➔ -é) mais « Il veut <em>manger</em> » (il veut vendre ➔ -er).
+                            </p>
+                        </div>
+                    `;
+                }
+
+                // Module permanent sur les homophones
+                html += `
+                    <div class="p-4 bg-purple-50 rounded-2xl border border-purple-200">
+                        <h5 class="font-bold text-purple-900 text-sm mb-1">4. Ne plus confondre « à » et « a »</h5>
+                        <p class="text-xs text-slate-700 mb-1">Remplace par « avait ». Si la phrase fonctionne, c'est le verbe avoir (a, sans accent). Sinon, c'est la préposition (à avec accent).</p>
+                        <p class="text-xs font-bold text-purple-800 bg-white p-2 rounded-lg mt-1 border border-purple-200">
+                            💡 Exemple : « Il <strong>a</strong> faim » (il avait faim) mais « Il part <strong>à</strong> Paris » (on ne dit pas 'il part avait Paris').
+                        </p>
+                    </div>
+                `;
+
+                content.innerHTML = html;
+            }
+
+            closeLessonCourse() {
+                document.getElementById('lesson-modal').classList.add('hidden');
+            }
+
+            showAudioGuideModal() {
+                document.getElementById('audio-modal').classList.remove('hidden');
+            }
+
+            closeAudioModal() {
+                document.getElementById('audio-modal').classList.add('hidden');
+            }
+
+            showMessageBanner(text) {
+                let banner = document.getElementById('app-banner-msg');
+                if (!banner) {
+                    banner = document.createElement('div');
+                    banner.id = 'app-banner-msg';
+                    banner.className = "fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-amber-600 text-white font-bold px-6 py-3 rounded-2xl shadow-2xl z-50 text-sm flex items-center gap-2 border-2 border-white transition duration-300";
+                    document.body.appendChild(banner);
+                }
+                banner.innerHTML = `<span>⚠️</span> <span>${text}</span>`;
+                banner.style.display = 'flex';
+                setTimeout(() => {
+                    banner.style.display = 'none';
+                }, 4000);
+            }
+
+            // Réinitialisation instantanée (Étape 4)
+            resetAll() {
+                this.synth.cancel();
+                document.getElementById('child-written-text').value = '';
+                this.updateWordCount();
+                document.getElementById('step-3').classList.add('hidden');
+                document.getElementById('step-2').classList.add('hidden');
+                document.getElementById('step-1').classList.remove('hidden');
+                document.getElementById('badge-level').classList.add('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Instanciation au chargement du DOM
+        let app;
+        window.addEventListener('DOMContentLoaded', () => {
+            app = new DicteeApp();
+        });
+    </script>
+</body>
+</html>
